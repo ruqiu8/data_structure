@@ -10,7 +10,7 @@ int link_list_init(LinkList link_list)
 {
     if (link_list == NULL) return -1;
     link_list->length = 0;
-    link_list->head = NULL;
+    link_list->next = NULL;
     return 0;
 }
 
@@ -28,17 +28,19 @@ int link_list_empty(LinkList link_list, bool* is_empty)
     return 0;
 }
 
-int link_list_get_elem(LinkList link_list, size_t index, LNode** node)
+int link_list_get_elem(LinkList link_list, size_t index, ElemType* elem)
 {
     if (link_list == NULL || index < 1 || index > link_list->length) {
         return -1;
     }
 
-    LNode* p = link_list->head;
+    if (elem == NULL) return -1;
+
+    LNode* p = link_list->next;
     for (size_t i = 1; i < index; i++) {
         p = p->next;
     }
-    *node = p;
+    *elem = p->data;
     return 0;
 }
 
@@ -48,7 +50,7 @@ int link_list_locate_elem(LinkList link_list, const ElemType* elem, Comparer com
         return -1;
     }
 
-    LNode* node = link_list->head;
+    LNode* node = link_list->next;
 
     for (size_t i = 1;i <= link_list->length; i++)
     {
@@ -80,11 +82,11 @@ int link_list_insert_elem(LinkList link_list, size_t index, const ElemType* elem
 
     // 在头部插入（index = 1）
     if (index == 1) {
-        new_node->next = link_list->head;
-        link_list->head = new_node;
+        new_node->next = link_list->next;
+        link_list->next = new_node;
     } else {
         // 找到第 index-1 个节点
-        LNode* prev = link_list->head;
+        LNode* prev = link_list->next;
         for (size_t i = 1; i < index - 1; i++) {
             prev = prev->next;
         }
@@ -110,11 +112,11 @@ int link_list_delete_elem(LinkList link_list, size_t index, ElemType* elem)
 
     // 删除第一个节点
     if (index == 1) {
-        to_delete = link_list->head;
-        link_list->head = to_delete->next;
+        to_delete = link_list->next;
+        link_list->next = to_delete->next;
     } else {
         // 找到第 index-1 个节点
-        LNode* prev = link_list->head;
+        LNode* prev = link_list->next;
         for (size_t i = 1; i < index - 1; i++) {
             prev = prev->next;
         }
@@ -148,7 +150,7 @@ int link_list_print_list(LinkList link_list, PrintElem print_elem)
     }
 
     // 遍历打印元素
-    LNode* node = link_list->head;
+    LNode* node = link_list->next;
     for (size_t i = 0; i < link_list->length; i++) {
         print_elem(&node->data);
         // 元素之间添加逗号分隔
@@ -165,7 +167,7 @@ int link_list_destroy(LinkList link_list)
 {
     if (link_list == NULL) return -1;
 
-    LNode* node = link_list->head;
+    LNode* node = link_list->next;
     for (size_t i = 1;i <= link_list->length;i++)
     {
         LNode* next = node->next;
@@ -173,6 +175,77 @@ int link_list_destroy(LinkList link_list)
         node = next;
     }
     link_list->length = 0;
-    link_list->head = NULL;
+    link_list->next = NULL;
+    return 0;
+}
+int link_list_create_head_insert(LinkList link_list, const ElemType* elems, size_t count)
+{
+    if (link_list == NULL || elems == NULL) {
+        return -1;
+    }
+
+    if (link_list -> next != NULL)
+    {
+        return -2;
+    }
+
+    // 头插法建立链表
+    for (size_t i = 0; i < count; i++) {
+        // 创建新节点
+        LNode* new_node = (LNode*)malloc(sizeof(LNode));
+        if (new_node == NULL) {
+            // 内存分配失败，清理已分配的内存
+            link_list_destroy(link_list);
+            return -1;
+        }
+        new_node->data = elems[i];
+        new_node->next = NULL;
+
+        // 将新节点插入到头部
+        new_node->next = link_list->next;
+        link_list->next = new_node;
+
+        link_list->length++;
+    }
+    return 0;
+}
+
+int link_list_create_tail_insert(LinkList link_list, const ElemType* elems, size_t count)
+{
+    if (link_list == NULL || elems == NULL) {
+        return -1;
+    }
+
+    if (link_list -> next != NULL)
+    {
+        return -2;
+    }
+
+    LNode* tail = NULL;
+
+    // 尾插法建立链表
+    for (size_t i = 0; i < count; i++) {
+        // 创建新节点
+        LNode* new_node = (LNode*)malloc(sizeof(LNode));
+        if (new_node == NULL) {
+            // 内存分配失败，清理已分配的内存
+            link_list_destroy(link_list);
+            return -1;
+        }
+        new_node->data = elems[i];
+        new_node->next = NULL;
+
+        if (link_list->next == NULL) {
+            // 第一个节点
+            link_list->next = new_node;
+            tail = new_node;
+        } else {
+            // 非第一个节点，插入到尾部
+            tail->next = new_node;
+            tail = new_node;
+        }
+
+        link_list->length++;
+    }
     return 0;
 }

@@ -11,7 +11,7 @@
 - 文件名采用下划线命名，代码文件和头文件名词相同，示例命名为 `xxx_sample.c`，`xxx` 为代码文件名。
 - 函数采用下划线命名，结构体和 `typeof` 使用驼峰命名。
 
-开发环境：Ubuntu、使用 GCC 工具链和 Cmake，IDE 使用 Clion。
+开发环境：Ubuntu、GCC 和 Cmake，IDE 使用 Clion。
 
 部署：
 

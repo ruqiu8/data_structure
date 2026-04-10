@@ -53,9 +53,9 @@ int main()
     printf("链表是否为空: %s\n", is_empty ? "是" : "否");
 
     // 获取特定位置元素
-    LNode* node;
-    if (link_list_get_elem(link_list, 3, &node) == 0) {
-        printf("第 3 个位置的元素是: %d\n", node->data);
+    ElemType elem;
+    if (link_list_get_elem(link_list, 3, &elem) == 0) {
+        printf("第 3 个位置的元素是: %d\n", elem);
     }
 
     // 查找元素位置
@@ -73,9 +73,8 @@ int main()
 
     // 删除元素
     printf("删除第 2 个位置的元素: ");
-    ElemType deleted_elem;
-    if (link_list_delete_elem(link_list, 2, &deleted_elem) == 0) {
-        printf("%d\n", deleted_elem);
+    if (link_list_delete_elem(link_list, 2, &elem) == 0) {
+        printf("%d\n", elem);
     }
     link_list_print_list(link_list, print_int);
 
@@ -86,22 +85,22 @@ int main()
     // 删除最后一个元素
     printf("删除最后一个位置元素: ");
     link_list_length(link_list, &length);
-    if (link_list_delete_elem(link_list, length, &deleted_elem) == 0) {
-        printf("%d\n", deleted_elem);
+    if (link_list_delete_elem(link_list, length, &elem) == 0) {
+        printf("%d\n", elem);
     }
     link_list_print_list(link_list, print_int);
 
     // 在头部插入
     printf("在头部插入元素 5\n");
-    ElemType new_elem = 5;
-    link_list_insert_elem(link_list, 1, &new_elem);
+    elem = 5;
+    link_list_insert_elem(link_list, 1, &elem);
     link_list_print_list(link_list, print_int);
 
     // 在尾部插入
     printf("在尾部插入元素 70\n");
     link_list_length(link_list, &length);
-    new_elem = 70;
-    link_list_insert_elem(link_list, length + 1, &new_elem);
+    elem = 70;
+    link_list_insert_elem(link_list, length + 1, &elem);
     link_list_print_list(link_list, print_int);
 
     // 销毁链表
@@ -109,6 +108,46 @@ int main()
     printf("链表已销毁\n");
 
     // 释放头节点内存
+    free(link_list);
+
+    // ========== 测试头插法建立链表 ==========
+    printf("\n-------测试头插法建立链表-------\n");
+    link_list = (LinkList)malloc(sizeof(*link_list));
+    if (link_list == NULL) {
+        printf("内存分配失败\n");
+        return -1;
+    }
+    link_list_init(link_list);
+
+    ElemType elems[] = {10, 20, 30, 40, 50};
+    printf("使用头插法建立链表，原始数组: [10, 20, 30, 40, 50]\n");
+    if (link_list_create_head_insert(link_list, elems, 5) == 0) {
+        printf("头插法建立链表成功\n");
+        link_list_print_list(link_list, print_int);
+    } else {
+        printf("头插法建立链表失败\n");
+    }
+
+    link_list_destroy(link_list);
+    free(link_list);
+
+    printf("\n-------测试尾插法建立链表-------\n");
+    link_list = (LinkList)malloc(sizeof(*link_list));
+    if (link_list == NULL) {
+        printf("内存分配失败\n");
+        return -1;
+    }
+    link_list_init(link_list);
+
+    printf("使用尾插法建立链表，原始数组: [10, 20, 30, 40, 50]\n");
+    if (link_list_create_tail_insert(link_list, elems, 5) == 0) {
+        printf("尾插法建立链表成功\n");
+        link_list_print_list(link_list, print_int);
+    } else {
+        printf("尾插法建立链表失败\n");
+    }
+
+    link_list_destroy(link_list);
     free(link_list);
 
     return 0;

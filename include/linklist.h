@@ -26,7 +26,7 @@ typedef struct LNode {
 typedef struct
 {
     size_t length;
-    LNode* head;
+    LNode* next;
 } LinkListHeader;
 
 typedef LinkListHeader* LinkList;
@@ -34,10 +34,12 @@ typedef LinkListHeader* LinkList;
 extern int link_list_init(LinkList link_list);
 extern int link_list_length(LinkList link_list, size_t *length);
 extern int link_list_empty(LinkList link_list, bool* is_empty);
-extern int link_list_get_elem(LinkList link_list, size_t index, LNode** node);
+extern int link_list_get_elem(LinkList link_list, size_t index, ElemType* elem);
 extern int link_list_locate_elem(LinkList link_list, const ElemType* elem, Comparer comparer, size_t* index);
 extern int link_list_insert_elem(LinkList link_list, size_t index, const ElemType* elem);
 extern int link_list_delete_elem(LinkList link_list, size_t index, ElemType* elem);
 extern int link_list_print_list(LinkList link_list, PrintElem print_elem);
 extern int link_list_destroy(LinkList link_list);
+extern int link_list_create_head_insert(LinkList link_list, const ElemType* elems, size_t count);
+extern int link_list_create_tail_insert(LinkList link_list, const ElemType* elems, size_t count);
 #endif //DATA_STRUCTURE_LINKLIST_H
