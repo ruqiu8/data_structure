@@ -1,31 +1,55 @@
 cmake_minimum_required(VERSION 3.10)
 
-# 项目名称和版本
 project(data_structure VERSION 1.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# 打印编译信息
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address)
+endif()
+
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-# 加载头文件
-include_directories(include)
-
 # 查找源文件
-file(GLOB SOURCES "src/*.c")
+set(SOURCES
+    src/seqlist.c
+    src/linklist.c
+    src/char_seq_stack.c
+    src/int_link_stack.c
+    src/seq_queue.c
+    src/link_queue.c
+    src/infix.c
+)
 
-# 示例源文件
-file(GLOB SAMPLE_SOURCES "samples/*.c")
+add_library(ds STATIC ${SOURCES})
+target_include_directories(ds PRIVATE include)
 
-# 批量生成可执行文件
-foreach(SAMPLE_PATH ${SAMPLE_SOURCES})
-    # 获取文件名不带后缀
-    get_filename_component(SAMPLE_NAME ${SAMPLE_PATH} NAME_WE)
+set(TEST_SOURCES
+    tests/seqlist_test.c
+    tests/linklist_test.c
+    tests/char_seq_stack_test.c
+    tests/int_link_stack_test.c
+    tests/seq_queue_test.c
+    tests/link_queue_test.c
+    tests/infix_test.c
+)
 
-    # 为每个示例创建一个可执行文件
-    # 名字就是文件名，源代码包含该示例文件 + src 目录下的通用实现
-    add_executable(${SAMPLE_NAME} ${SAMPLE_PATH} ${SOURCES})
+enable_testing()
 
-    message(STATUS "Created executable: ${SAMPLE_NAME}")
+foreach(TEST_PATH ${TEST_SOURCES})
+
+    get_filename_component(TEST_NAME ${TEST_PATH} NAME_WE)
+    add_executable(${TEST_NAME} ${TEST_PATH})
+    target_link_libraries(${TEST_NAME} ds)
+
+    target_include_directories(${TEST_NAME} PRIVATE include)
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+
+    message(STATUS "Created test: ${TEST_NAME}")
 endforeach()

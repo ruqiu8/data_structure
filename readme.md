@@ -1,20 +1,82 @@
-本仓库是王道数据结构教材中出现的数据结构的 C 语言实现，但对函数名和实现逻辑进行了一些修改。
+# 数据结构
 
-目录说明：
+一个用 C 语言实现的基础数据结构库，包含线性表、栈、队列等常用数据结构及其应用。
 
-- `include`：公共头文件
-- `src`：实际代码实现
-- `samples`：代码的一些示例
+## 项目结构
 
-命名规则：
+```
+data_structure/
+├── include/              # 头文件目录
+│   ├── seqlist.h          # 顺序表
+│   ├── linklist.h         # 链表
+│   ├── char_seq_stack.h   # 字符顺序栈
+│   ├── int_link_stack.h   # 整型链式栈
+│   ├── seq_queue.h        # 循环队列
+│   ├── link_queue.h       # 链表队列
+│   └── infix.h            # 表达式求值
+├── src/                  # 源文件目录
+│   ├── seqlist.c
+│   ├── linklist.c
+│   ├── char_seq_stack.c
+│   ├── int_link_stack.c
+│   ├── seq_queue.c
+│   ├── link_queue.c
+│   └── infix.c
+├── tests/                # 单元测试目录
+│   ├── seqlist_test.c
+│   ├── linklist_test.c
+│   ├── char_seq_stack_test.c
+│   ├── int_link_stack_test.c
+│   ├── seq_queue_test.c
+│   ├── link_queue_test.c
+│   └── infix_test.c
+├── CMakeLists.txt        # CMake 构建配置
+```
 
-- 文件名采用下划线命名，代码文件和头文件名词相同，示例命名为 `xxx_sample.c`，`xxx` 为代码文件名。
-- 函数采用下划线命名，结构体和 `typeof` 使用驼峰命名。
+## 构建与测试
 
-开发环境：Ubuntu、GCC 和 Cmake，IDE 使用 Clion。
+### 环境要求
 
-部署：
+- CMake 3.10+
+- C 编译器 (GCC/Clang)
+- C11 标准
 
-1. 执行 `mkdir build && cd build`
-2. 执行 `cmake .. && make`
-3. 执行 `./xxx_sample` 运行相应的示例
+### 构建项目
+
+```bash
+# 创建构建目录
+mkdir build && cd build
+
+# 配置项目
+cmake ..
+
+# 编译
+make
+```
+
+### 运行测试
+
+```bash
+# 运行所有测试
+ctest
+
+# 或直接运行单个测试
+./seqlist_test
+./linklist_test
+./char_seq_stack_test
+./int_link_stack_test
+./seq_queue_test
+./link_queue_test
+./infix_test
+```
+
+### 示例输出
+
+```
+$ ./seqlist_test
+All tests passed!
+
+$ ./linklist_test
+All tests passed!
+```
+

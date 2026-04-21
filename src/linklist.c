@@ -1,251 +1,190 @@
-//
-// Created by ruqiu on 2026/3/23.
-//
 #include "linklist.h"
 
+#include <assert.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int link_list_init(LinkList link_list)
-{
-    if (link_list == NULL) return -1;
-    link_list->length = 0;
-    link_list->next = NULL;
-    return 0;
-}
-
-int link_list_length(LinkList link_list, size_t *length)
-{
-    if (link_list == NULL) return -1;
-    *length = link_list->length;
-    return 0;
-}
-
-int link_list_empty(LinkList link_list, bool* is_empty)
-{
-    if (link_list == NULL) return -1;
-    *is_empty =  link_list->length == 0;
-    return 0;
-}
-
-int link_list_get_elem(LinkList link_list, size_t index, ElemType* elem)
-{
-    if (link_list == NULL || index < 1 || index > link_list->length) {
-        return -1;
+LinkList link_list_create() {
+    LinkList L = (LinkList) malloc(sizeof(LNode));
+    if (L == NULL) {
+        return NULL;
     }
 
-    if (elem == NULL) return -1;
+    L->next = NULL;
+    return L;
+}
 
-    LNode* p = link_list->next;
-    for (size_t i = 1; i < index; i++) {
+size_t link_list_length(LinkList L) {
+    assert(L != NULL);
+    size_t length = 0;
+    LNode *p      = L->next;
+    while (p) {
+        length++;
         p = p->next;
+    }
+    return length;
+}
+
+bool link_list_empty(LinkList L) {
+    assert(L != NULL);
+    return (L->next == NULL);
+}
+
+size_t link_list_locate_elem(LinkList L, const ElemType *elem, Comparer comparer) {
+    assert(L != NULL && elem != NULL && comparer != NULL);
+    LNode *p     = L->next;
+    size_t index = 0;
+    while (p) {
+        if (comparer(&(p->data), elem) == 0) {
+            return index;
+        }
+        p = p->next;
+        index++;
+    }
+    return SIZE_MAX;
+}
+
+int link_list_get_elem(LinkList L, size_t index, ElemType *elem) {
+    assert(L != NULL && elem != NULL);
+
+    LNode *p = L->next;
+    size_t j = 0;
+    while (p && j < index) {
+        p = p->next;
+        j++;
+    }
+
+    if (p == NULL) {
+        return -1;
     }
     *elem = p->data;
     return 0;
 }
 
-int link_list_locate_elem(LinkList link_list, const ElemType* elem, Comparer comparer, size_t* index)
-{
-    if (link_list == NULL || elem == NULL || comparer == NULL || index == NULL) {
+int link_list_insert_elem(LinkList L, size_t index, const ElemType *elem) {
+    assert(L != NULL && elem != NULL);
+
+    LNode *p = L;
+    size_t j = 0;
+
+    // 寻找第 index 个节点的前驱
+    while (p != NULL && j < index) {
+        p = p->next;
+        j++;
+    }
+
+    // 如果 p 为空，说明 index 超出了链表长度范围
+    if (p == NULL) {
         return -1;
     }
 
-    LNode* node = link_list->next;
-
-    for (size_t i = 1;i <= link_list->length; i++)
-    {
-        if (comparer(&(node->data), elem) == 0) {
-            *index = i;  // 将找到的索引写入指针
-            return 0;    // 返回成功
-        }
-        node = node->next;
-    }
-    return -1;
-}
-
-int link_list_insert_elem(LinkList link_list, size_t index, const ElemType* elem)
-{
-    if (link_list == NULL || elem == NULL) {
-        return -1;
-    }
-    if (index < 1 || index > link_list->length + 1) {
-        return -1;
-    }
-
-    // 创建新节点
-    LNode* new_node = (LNode*)malloc(sizeof(LNode));
+    LNode *new_node = (LNode *) malloc(sizeof(LNode));
     if (new_node == NULL) {
-        return -1;  // 内存分配失败
+        return -1;
     }
+
     new_node->data = *elem;
-    new_node->next = NULL;
+    new_node->next = p->next;
+    p->next        = new_node;
 
-    // 在头部插入（index = 1）
-    if (index == 1) {
-        new_node->next = link_list->next;
-        link_list->next = new_node;
-    } else {
-        // 找到第 index-1 个节点
-        LNode* prev = link_list->next;
-        for (size_t i = 1; i < index - 1; i++) {
-            prev = prev->next;
-        }
-        // 在第 index-1 个节点后插入
-        new_node->next = prev->next;
-        prev->next = new_node;
-    }
-
-    link_list->length++;
     return 0;
 }
 
-int link_list_delete_elem(LinkList link_list, size_t index, ElemType* elem)
-{
-    if (link_list == NULL) {
+int link_list_delete_elem(LinkList L, size_t index, ElemType *elem) {
+    assert(L != NULL);
+
+    LNode *p = L;
+    size_t j = 0;
+
+    // 寻找待删除节点的前驱节点
+    while (p->next != NULL && j < index) {
+        p = p->next;
+        j++;
+    }
+
+    if (p->next == NULL) {
         return -1;
     }
-    if (index < 1 || index > link_list->length) {
-        return -1;
-    }
 
-    LNode* to_delete;
+    LNode *q = p->next; // q 是真正要删除的节点
+    p->next  = q->next; // 断开连接
 
-    // 删除第一个节点
-    if (index == 1) {
-        to_delete = link_list->next;
-        link_list->next = to_delete->next;
-    } else {
-        // 找到第 index-1 个节点
-        LNode* prev = link_list->next;
-        for (size_t i = 1; i < index - 1; i++) {
-            prev = prev->next;
-        }
-        // 要删除的节点是第 index 个节点
-        to_delete = prev->next;
-        prev->next = to_delete->next;
+    if (elem != NULL) {
+        *elem = q->data;
     }
+    free(q);
 
-    if (elem != NULL)
-    {
-        // 保存被删除元素的数据
-        *elem = to_delete->data;
-    }
-    // 释放节点内存
-    free(to_delete);
-    link_list->length--;
     return 0;
 }
 
-int link_list_print_list(LinkList link_list, PrintElem print_elem)
-{
-    if (link_list == NULL  || print_elem == NULL) {
-        return -1;
-    }
-
-    printf("[");
-    // 处理空表
-    if (link_list->length == 0) {
-        printf("]\n");
-        return 0;
-    }
-
-    // 遍历打印元素
-    LNode* node = link_list->next;
-    for (size_t i = 0; i < link_list->length; i++) {
-        print_elem(&node->data);
-        // 元素之间添加逗号分隔
-        if (i != link_list->length - 1) {
+void link_list_print_list(LinkList L, PrintElem print_elem) {
+    assert(L != NULL && print_elem != NULL);
+    LNode *p = L->next;
+    printf("List: [");
+    while (p) {
+        print_elem(&(p->data));
+        if (p->next) {
             printf(", ");
         }
-        node = node->next;
+        p = p->next;
     }
     printf("]\n");
-    return 0;
 }
 
-int link_list_destroy(LinkList link_list)
-{
-    if (link_list == NULL) return -1;
+void link_list_destroy(LinkList *L) {
+    assert(L != NULL);
 
-    LNode* node = link_list->next;
-    for (size_t i = 1;i <= link_list->length;i++)
-    {
-        LNode* next = node->next;
-        free(node);
-        node = next;
+    if (*L == NULL) {
+        return;
     }
-    link_list->length = 0;
-    link_list->next = NULL;
-    return 0;
+
+    LNode *p = *L;
+    while (p) {
+        LNode *temp = p;
+        p           = p->next;
+        free(temp);
+    }
+    *L = NULL;
 }
-int link_list_create_head_insert(LinkList link_list, const ElemType* elems, size_t count)
-{
-    if (link_list == NULL || elems == NULL) {
-        return -1;
-    }
 
-    if (link_list -> next != NULL)
-    {
-        return -2;
-    }
+int link_list_create_head(LinkList L, const ElemType *elem, size_t length) {
+    assert(L != NULL && elem != NULL);
 
-    // 头插法建立链表
-    for (size_t i = 0; i < count; i++) {
-        // 创建新节点
-        LNode* new_node = (LNode*)malloc(sizeof(LNode));
+    for (size_t i = 0; i < length; i++) {
+        LNode *new_node = (LNode *) malloc(sizeof(LNode));
         if (new_node == NULL) {
-            // 内存分配失败，清理已分配的内存
-            link_list_destroy(link_list);
+            // 由调用者决定创建失败时是否销毁 L
             return -1;
         }
-        new_node->data = elems[i];
-        new_node->next = NULL;
-
-        // 将新节点插入到头部
-        new_node->next = link_list->next;
-        link_list->next = new_node;
-
-        link_list->length++;
+        new_node->data = elem[i];
+        new_node->next = L->next;
+        L->next        = new_node;
     }
     return 0;
 }
 
-int link_list_create_tail_insert(LinkList link_list, const ElemType* elems, size_t count)
-{
-    if (link_list == NULL || elems == NULL) {
-        return -1;
+int link_list_create_tail(LinkList L, const ElemType *elem, size_t length) {
+    assert(L != NULL && elem != NULL);
+
+    LNode *rear = L;
+
+    while (rear->next != NULL) {
+        rear = rear->next;
     }
 
-    if (link_list -> next != NULL)
-    {
-        return -2;
-    }
-
-    LNode* tail = NULL;
-
-    // 尾插法建立链表
-    for (size_t i = 0; i < count; i++) {
-        // 创建新节点
-        LNode* new_node = (LNode*)malloc(sizeof(LNode));
+    for (size_t i = 0; i < length; i++) {
+        LNode *new_node = (LNode *) malloc(sizeof(LNode));
         if (new_node == NULL) {
-            // 内存分配失败，清理已分配的内存
-            link_list_destroy(link_list);
             return -1;
         }
-        new_node->data = elems[i];
+
+        new_node->data = elem[i];
         new_node->next = NULL;
 
-        if (link_list->next == NULL) {
-            // 第一个节点
-            link_list->next = new_node;
-            tail = new_node;
-        } else {
-            // 非第一个节点，插入到尾部
-            tail->next = new_node;
-            tail = new_node;
-        }
-
-        link_list->length++;
+        rear->next = new_node; // 链接到当前末尾
+        rear       = new_node; // 更新末尾指针
     }
     return 0;
 }

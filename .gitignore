@@ -1,5 +1,4 @@
 .idea/
-.vascode/
 *.iml
 cmake-build-*/
 cmake-build-debug/
@@ -40,3 +39,6 @@ out/
 Thumbs.db
 
 *.wsl
+
+.cache/
+logs/

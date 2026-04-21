@@ -1,0 +1,44 @@
+# 基于的基础风格
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: Latest
+
+# 缩进与列宽
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 140
+
+# 对齐与排版
+PointerAlignment: Right
+AlignConsecutiveMacros: true
+AlignEscapedNewlines: Right
+AlignTrailingComments: true
+
+# 大括号与换行
+BreakBeforeBraces: Attach
+IndentCaseLabels: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+
+# 函数参数对齐
+AlignAfterOpenBracket: Align
+
+# 空格规则
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+
+# 预处理指令
+IndentPPDirectives: BeforeHash
+
+# Include 排序与分组
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^"config\.h"'
+    Priority:        -1
+  - Regex:           '^<.*>'
+    Priority:        1
+  - Regex:           '^".*"'
+    Priority:        2

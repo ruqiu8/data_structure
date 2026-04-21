@@ -1,0 +1,47 @@
+{
+    // cmake tools配置
+    // 使用Unix Makefiles生成器
+    "cmake.generator": "Unix Makefiles",
+    // 构建目录设置为 cmake-build-<buildType>（例如 cmake-build-Debug）
+    "cmake.buildDirectory": "${workspaceFolder}/cmake-build-${buildType}",
+    // 让 CMake 生成 compile_commands.json 文件
+    "cmake.configureSettings": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+    },
+    // 自动将 compile_commands.json 复制到项目根目录（方便工具读取）
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    // 保存 CMakeLists.txt 或相关文件时不自动触发 Configure
+    "cmake.configureOnEdit": false,
+    // 打开文件夹或工作区时不自动触发 Configure
+    // 需要手动点击生成让 CMake 生成 compile_commands.json
+    "cmake.configureOnOpen": false,
+    // Clangd 配置
+    // 指定 clangd 路径（如果已加入 PATH，直接写 "clangd" 即可）
+    "clangd.path": "clangd",
+    // Clangd 启动参数
+    "clangd.arguments": [
+        // 指定 compile_commands.json 所在目录
+        "--compile-commands-dir=${workspaceFolder}",
+        // 后台索引（提升代码提示速度）
+        "--background-index",
+        // 启用 clang-tidy 代码质量检查
+        "--clang-tidy",
+        // 自动插入缺失的头文件
+        "--header-insertion=iwyu",
+        // 详细的代码补全提示
+        "--completion-style=detailed",
+        // 函数参数占位符
+        "--function-arg-placeholders=true",
+        // 使用内存存储预编译头文件（提升性能）
+        "--pch-storage=memory",
+    ],
+    // 使用 clangd 作为默认格式化工具，并启用保存时自动格式化
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+        "editor.formatOnSave": true,
+    },
+    "[c]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+        "editor.formatOnSave": true
+    },
+}
